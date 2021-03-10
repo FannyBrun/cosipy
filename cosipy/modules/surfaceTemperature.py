@@ -2,6 +2,7 @@ import numpy as np
 from constants import sfc_temperature_method, saturation_water_vapour_method, zero_temperature, \
                       lat_heat_sublimation, lat_heat_vaporize, stability_correction, spec_heat_air, \
                       spec_heat_water, water_density, surface_emission_coeff, sigma, zlt1, zlt2
+from config import WRF_X_CSPY
 from scipy.optimize import minimize, newton
 from numba import njit
 from types import SimpleNamespace
@@ -305,7 +306,10 @@ def phi_m(z,L):
         if ((z/L)>0.0) & ((z/L)<=1.0):
             return (-5*z/L)
         elif ((z/L)>1.0):
-            return (1-5) * (1+np.log(z/L)) - (z/L) 
+            if WRF_X_CSPY:
+                return -5. 	#limit stability parameter following Noah-MP LSM approach
+            else:			       
+                return (1-5) * (1+np.log(z/L)) - (z/L) 
     elif L<0:
         x = np.power((1-16*z/L),0.25)
         return 2*np.log((1+x)/2.0) + np.log((1+np.power(x,2.0))/2.0) - 2*np.arctan(x) + np.pi/2.0
@@ -321,7 +325,10 @@ def phi_tq(z,L):
         if ((z/L)>0.0) & ((z/L)<=1.0):
             return (-5*z/L)
         elif ((z/L)>1.0):
-            return (1-5) * (1+np.log(z/L)) - (z/L) 
+            if WRF_X_CSPY:	
+                return -5. 	#limit stability parameter following Noah-MP LSM approach    
+            else:	
+                return (1-5) * (1+np.log(z/L)) - (z/L) 		
     elif L<0:
         x = np.power((1-19.3*z/L),0.25)
         return 2*np.log((1+np.power(x,2.0))/2.0)
