@@ -46,7 +46,7 @@ spread_snow_transfer_function = 1               # 1: +-2.5
 mult_factor_RRR = 1.0                           # multiplication factor for RRR
 
 minimum_snow_layer_height = 0.001               # minimum layer height
-minimum_snowfall = 0.001                        # minimum snowfall per time step in m which is added as new snow
+minimum_snowfall = 0.0                          # minimum snowfall per time step in m which is added as new snow
 
 
 ' REMESHING OPTIONS'
