@@ -307,7 +307,7 @@ def phi_m(z,L):
             return (-5*z/L)
         elif ((z/L)>1.0):
             if WRF_X_CSPY:
-                return -5. 	#limit stability parameter following Noah-MP LSM approach
+                return -5. 	#limit stability parameter (z/L <= 1.) following Noah-MP LSM approach
             else:			       
                 return (1-5) * (1+np.log(z/L)) - (z/L) 
     elif L<0:
