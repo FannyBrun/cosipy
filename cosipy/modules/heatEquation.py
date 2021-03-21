@@ -18,6 +18,7 @@ def solveHeatEquation(GRID, dt):
     
     # Get thermal diffusivity [m2 s-1]
     K = np.asarray(GRID.get_thermal_diffusivity()) 
+    assert np.all(K>0.)    #stop otherwise dt_stab < 0. and infinite while loop
     
     # Get snow layer heights    
     hlayers = np.asarray(GRID.get_height())
