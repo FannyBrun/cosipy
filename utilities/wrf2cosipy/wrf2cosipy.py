@@ -12,7 +12,7 @@ from itertools import product
 sys.path.append('../../')
 
 from utilities.wrf2cosipy.wrf2cosipyConfig import *
-from constants import densification_method, constant_density, ice_density
+from constants import densification_method, constant_density, water_density
 
 import argparse
 
@@ -92,7 +92,7 @@ def create_input(wrf_file, cosipy_file, start_date, end_date):
             snowf[t,:,:] = ds.SNOWNC[t,:,:]
         else:
             snowf[t,:,:] = ds.SNOWNC[t,:,:]-ds.SNOWNC[t-1,:,:]   
-    snowf = (snowf/1000.0)*(ice_density/density_fresh_snow)
+    snowf = (snowf/1000.0)*(water_density/density_fresh_snow)
     dso = add_variable_along_timelatlon(dso, snowf, 'SNOWFALL', 'm', 'Snowfall')
     
     # Compute slope & aspect from HGT
