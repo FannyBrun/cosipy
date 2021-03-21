@@ -17,8 +17,7 @@ from constants import densification_method, constant_density, water_density
 import argparse
 
 def create_input(wrf_file, cosipy_file, start_date, end_date):
-    """ This function creates an input dataset from the Hintereisferner CR3000 Logger Dataset 
-        Here you need to define how to interpolate the data.
+    """ This function creates an input dataset from WRF data
     """
 
     print('-------------------------------------------')
