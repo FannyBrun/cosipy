@@ -4,7 +4,7 @@ import pandas as pd
 from constants import mult_factor_RRR, densification_method, ice_density, water_density, \
                       zero_temperature, lat_heat_sublimation,lat_heat_melting,lat_heat_vaporize, \
 		      center_snow_transfer_function,spread_snow_transfer_function, constant_density
-from config import force_use_TP, force_use_N, stake_evaluation, full_field, WRF_X_CSPY 
+from config import force_use_TP, force_use_N, stake_evaluation, full_field, WRF_X_CSPY, WRF
 
 from cosipy.modules.albedo import updateAlbedo
 from cosipy.modules.heatEquation import solveHeatEquation
@@ -185,15 +185,19 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
             density_fresh_snow = constant_density 
 
         # Derive snowfall [m] and rain rates [m w.e.]
+        reference_density = ice_density
+        if WRF_X_CSPY or WRF:
+            reference_density = water_density
+	    
         if (SNOWF is not None) and (RRR is not None):
             SNOWFALL = SNOWF[t]
-            RAIN = RRR[t]-SNOWFALL*(density_fresh_snow/ice_density) * 1000.0
+            RAIN = RRR[t]-SNOWFALL*(density_fresh_snow/reference_density) * 1000.0
         elif (SNOWF is not None):
             SNOWFALL = SNOWF[t]
         else:
             # Else convert total precipitation [mm] to snowheight [m]; liquid/solid fraction
-            SNOWFALL = (RRR[t]/1000.0)*(ice_density/density_fresh_snow)*(0.5*(-np.tanh(((T2[t]-zero_temperature) - center_snow_transfer_function) * spread_snow_transfer_function) + 1.0))
-            RAIN = RRR[t]-SNOWFALL*(density_fresh_snow/ice_density) * 1000.0
+            SNOWFALL = (RRR[t]/1000.0)*(reference_density/density_fresh_snow)*(0.5*(-np.tanh(((T2[t]-zero_temperature) - center_snow_transfer_function) * spread_snow_transfer_function) + 1.0))
+            RAIN = RRR[t]-SNOWFALL*(density_fresh_snow/reference_density) * 1000.0
 
         if SNOWFALL > 0.0:
             # Add a new snow node on top
@@ -297,7 +301,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         #--------------------------------------------
         # Calculate mass balance
         #--------------------------------------------
-        surface_mass_balance = SNOWFALL * (density_fresh_snow / ice_density) - melt + sublimation + deposition + evaporation
+        surface_mass_balance = SNOWFALL * (density_fresh_snow / reference_density) - melt + sublimation + deposition + evaporation
         internal_mass_balance = water_refreezed - subsurface_melt
         mass_balance = surface_mass_balance + internal_mass_balance
 
@@ -315,7 +319,7 @@ def cosipy_core(DATA, indY, indX, GRID_RESTART=None, stake_names=None, stake_dat
         
         # Save results
         _RAIN[t] = RAIN
-        _SNOWFALL[t] = SNOWFALL * (density_fresh_snow/ice_density)
+        _SNOWFALL[t] = SNOWFALL * (density_fresh_snow/reference_density)
         _LWin[t] = lw_radiation_in
         _LWout[t] = lw_radiation_out
         _H[t] = sensible_heat_flux
