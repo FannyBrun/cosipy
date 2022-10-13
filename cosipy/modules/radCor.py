@@ -425,7 +425,7 @@ def calcRad(solPars, timecorr, doy, hour, lat, tempgrid, pgrid, rhgrid, cldgrid,
     swidiff = elvgrid.copy() + np.nan
 
     # Mixing ratio from RH and Pres
-    mixing_interp = metpy.calc.mixing_ratio_from_relative_humidity(rhgrid * units.percent, tempgrid * units.kelvin, pgrid * units.hPa)
+    mixing_interp = metpy.calc.mixing_ratio_from_relative_humidity(pgrid * units.hPa, tempgrid * units.kelvin, rhgrid * units.percent)
     vp_interp = np.array(metpy.calc.vapor_pressure(pgrid * units.hPa, mixing_interp))
 
     # Solar geometries
